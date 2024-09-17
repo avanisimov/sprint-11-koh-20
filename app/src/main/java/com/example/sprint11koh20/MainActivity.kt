@@ -23,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "SPRINT_11"
     }
 
+    /*
+
+
+     */
+
     private val adapter = NewsAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                 GsonConverterFactory.create(
                     GsonBuilder()
                         .registerTypeAdapter(Date::class.java, CustomDateTypeAdapter())
+                        .registerTypeAdapter(NewsItem::class.java, NewsItemAdapter())
                         .create()
                 )
             )
@@ -65,7 +71,11 @@ class MainActivity : AppCompatActivity() {
         serverApi.getNews1().enqueue(object : Callback<NewsResponse> {
             override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
                 Log.i(TAG, "onResponse: ${response.body()}")
-                adapter.items = response.body()?.data?.items ?: emptyList()
+                adapter.items = response.body()?.data?.items
+                    ?.filter {
+                        it !is NewsItem.Unknown
+                    }
+                    ?: emptyList()
             }
 
             override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
@@ -79,11 +89,11 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-// https://raw.githubusercontent.com/avanisimov/sprint-11-koh-18/main/jsons/news_1.json
+// https://raw.githubusercontent.com/avanisimov/sprint-11-koh-20/main/jsons/news_1.json
 
 interface Sprint11ServerApi {
 
 
-    @GET("main/jsons/news_1.json")
+    @GET("main/jsons/news_2.json")
     fun getNews1(): Call<NewsResponse>
 }

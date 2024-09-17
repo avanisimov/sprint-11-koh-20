@@ -1,10 +1,14 @@
 package com.example.sprint11koh20
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.text.DateFormat
+import java.util.Date
 
 class NewsAdapter : RecyclerView.Adapter<NewsItemViewHolder>() {
 
@@ -37,7 +41,10 @@ class NewsItemViewHolder(
 ) {
 
     private val title: TextView = itemView.findViewById(R.id.title)
+    private val sportTeams: TextView = itemView.findViewById(R.id.sport_teams)
     private val created: TextView = itemView.findViewById(R.id.created)
+    private val socialContent: TextView = itemView.findViewById(R.id.social_content)
+    private val scienceImg: ImageView = itemView.findViewById(R.id.science_img)
 
     fun bind(item: NewsItem) {
         title.text = item.title
@@ -46,6 +53,30 @@ class NewsItemViewHolder(
                 DateFormat.SHORT,
                 DateFormat.SHORT
             ).format(item.created)
+        when (item) {
+            is NewsItem.Science -> {
+                Glide.with(itemView)
+                    .load(item.specificPropertyForScience)
+                    .into(scienceImg)
+                scienceImg.visibility = View.VISIBLE
+            }
+            is NewsItem.Sport -> {
+                sportTeams.text = item.specificPropertyForSport
+                sportTeams.visibility = View.VISIBLE
+            }
 
+            is NewsItem.Unknown -> {
+
+                sportTeams.visibility = View.GONE
+                scienceImg.visibility = View.GONE
+            }
+
+            is NewsItem.Social -> {
+                socialContent.visibility = View.VISIBLE
+                socialContent.text = item.content
+            }
+        }
+//        val date : Date = item.created
+//        date.year
     }
 }
